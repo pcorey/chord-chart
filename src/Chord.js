@@ -11,6 +11,10 @@ const Finger = styled.span`
   font-weight: bold;
 `;
 
+const Fingering = styled.span`
+  color: #ccc;
+`;
+
 const Open = styled.span`
   color: #333;
   font-weight: bold;
@@ -18,20 +22,20 @@ const Open = styled.span`
 
 const Fret = styled.span`
   color: #ccc;
-  font-weight: bold;
 `;
 
 const Name = styled.span`
   color: #ccc;
-  font-weight: bold;
 `;
 
 export default ({ chord, name }) => {
   let min = _.chain(chord)
+    .map(string => (_.isArray(string) ? string[0] : string))
     .reject(_.isNull)
     .min()
     .value();
   let max = _.chain(chord)
+    .map(string => (_.isArray(string) ? string[0] : string))
     .reject(_.isNull)
     .max()
     .value();
@@ -59,7 +63,9 @@ export default ({ chord, name }) => {
             _.chain(new Array(6))
               .fill()
               .map((_string, string) => {
-                return chord[string] == fret ? (
+                return (_.isArray(chord[string])
+                  ? chord[string][0]
+                  : chord[string]) == fret ? (
                   fret == 0 ? (
                     <Open>○</Open>
                   ) : (
@@ -92,6 +98,14 @@ export default ({ chord, name }) => {
           </span>
         ])
         .flatten()
+        .concat(
+          "  ",
+          _.chain(chord)
+            .map(string => (
+              <Fingering>{_.isArray(string) ? string[1] : " "}</Fingering>
+            ))
+            .value()
+        )
         .value()}
     </pre>
   );

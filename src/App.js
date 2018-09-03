@@ -18,6 +18,10 @@ class App extends Component {
         <Chord chord={[null, 3, 8, 6, 9, null]} />
         <Chord chord={[null, 3, 2, 0, 1, null]} />
         <Chord chord={[null, 3, 8, 6, 9, null]} />
+        <Chord
+          chord={[null, [10, 2], [10, 3], [9, 1], [12, 4], null]}
+          name="Cmaj7"
+        />
       </div>
     );
   }
