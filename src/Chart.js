@@ -15,8 +15,8 @@ const Label = styled.span``;
 
 const Wire = styled.span``;
 
-export default ({ chord, name }) => {
-  let { min, max } = _.chain(chord)
+const getMinAndMax = chord =>
+  _.chain(chord)
     .map(string => (_.isArray(string) ? string[0] : string))
     .reject(_.isNull)
     .thru(frets => ({
@@ -25,9 +25,12 @@ export default ({ chord, name }) => {
     }))
     .value();
 
-  const getFretRange = () => _.range(min, Math.max(max + 1, min + 5));
+export default ({ chord, name }) => {
+  let { min, max } = getMinAndMax(chord);
 
-  const buildFretRow = frets =>
+  const buildFretRange = () => _.range(min, Math.max(max + 1, min + 5));
+
+  const buildFretRows = frets =>
     _.map(frets, fret =>
       _.chain(_.range(chord.length))
         .map(
@@ -79,8 +82,8 @@ export default ({ chord, name }) => {
   return (
     <Chart>
       {_.chain()
-        .thru(getFretRange)
-        .thru(buildFretRow)
+        .thru(buildFretRange)
+        .thru(buildFretRows)
         .thru(intersperseFretWire)
         .thru(attachLeftGutter)
         .thru(attachRightGutter)
