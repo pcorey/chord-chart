@@ -54,7 +54,10 @@ export default ({ chord, name }) => {
   const attachLeftGutter = rows =>
     _.map(rows, (row, i) => (
       <Fragment>
-        <Label>{i == 0 && min != 0 ? _.pad(min, 2) : "  "}</Label>
+        <Label>
+          {"  "}
+          {i == 0 && min != 0 ? _.pad(min, 2) : "  "}
+        </Label>
         {row}
       </Fragment>
     ));
