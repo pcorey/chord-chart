@@ -1,16 +1,24 @@
 import "./App.css";
+import ApolloClient from "apollo-boost";
 import Chord from "./Chord";
+import Chords from "./Chords";
 import React, { Component } from "react";
-import styled from "styled-components";
 import _ from "lodash";
+import styled from "styled-components";
+import { ApolloProvider } from "react-apollo";
+
+const client = new ApolloClient({
+  uri: "http://localhost:4000/api/graphql"
+});
 
 const App = styled.div`
   font-size: 8px;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  /* justify-content: space-around; */
   flex-flow: row wrap;
+  max-width: 800px;
+  margin: 40px auto;
 `;
 
 const randomChord = chord => (
@@ -29,17 +37,20 @@ const randomChord = chord => (
 
 export default () => (
   <App>
-    <Chord chord={[null, 10, 10, 9, 12, null]} />
-    <Chord chord={[null, 8, 10, 9, 10, null]} />
-    <Chord chord={[null, 3, 8, 6, 9, null]} />
-    <Chord chord={[null, 3, 2, 0, 1, null]} />
-    {/* <Chord
-        chord={[null, [10, 2], [10, 3], [9, 1], [12, 4], null]}
-        name="Cmaj7"
-        /> */}
-    {_.chain(200)
-      .range()
-      .map(() => randomChord())
-      .value()}
+    <ApolloProvider client={client}>
+      <strong
+        style={{
+          width: "100%",
+          fontFamily: "Source Code Pro",
+          textAlign: "center",
+          margin: "0 0 40px 0",
+          fontSize: "16px"
+        }}
+      >
+        Cmaj7 (0 4 7 11)
+      </strong>
+      <br />
+      <Chords />
+    </ApolloProvider>
   </App>
 );
