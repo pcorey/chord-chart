@@ -15,6 +15,8 @@ const Label = styled.span``;
 
 const Wire = styled.span``;
 
+const Fingering = styled.span``;
+
 const getMinAndMax = chord =>
   _.chain(chord)
     .map(string => (_.isArray(string) ? string[0] : string))
@@ -50,6 +52,15 @@ export default ({ chord, name }) => {
       row,
       <Wire>{`├${_.repeat("┼", chord.length - 2)}┤`}</Wire>
     ]);
+
+  const appendFingering = rows => [
+    ...rows,
+    <Fingering>
+      {_.chain(chord)
+        .map(fret => (_.isArray(fret) ? fret[1] : " "))
+        .value()}
+    </Fingering>
+  ];
 
   const attachLeftGutter = rows =>
     _.map(rows, (row, i) => (
@@ -88,6 +99,7 @@ export default ({ chord, name }) => {
         .thru(buildFretRange)
         .thru(buildFretRows)
         .thru(intersperseFretWire)
+        .thru(appendFingering)
         .thru(attachLeftGutter)
         .thru(attachRightGutter)
         .thru(joinRows)
