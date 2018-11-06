@@ -3,8 +3,8 @@ import _ from "lodash";
 import styled from "styled-components";
 
 const Chart = styled.pre`
-  font-family: "Source Code Pro";
   text-align: center;
+  margin: 0;
 `;
 
 const Finger = styled.span`
@@ -22,12 +22,12 @@ const getMinAndMax = chord =>
     .map(string => (_.isArray(string) ? string[0] : string))
     .reject(_.isNull)
     .thru(frets => ({
-      min: _.min(frets),
-      max: _.max(frets)
+      min: _.min(frets) || 0,
+      max: _.max(frets) || 0
     }))
     .value();
 
-export default ({ chord, name }) => {
+export default ({ chord, name, onClick, selected }) => {
   let { min, max } = getMinAndMax(chord);
 
   const buildFretRange = () => _.range(min, Math.max(max + 1, min + 5));
@@ -79,8 +79,8 @@ export default ({ chord, name }) => {
         {row}
         <Label>
           {i == 0 && name
-            ? ` ${name}`
-            : name ? ` ${_.repeat(" ", name.length)}` : " "}
+            ? `     ${name}`
+            : name ? `     ${_.repeat(" ", name.length)}` : "     "}
         </Label>
       </Fragment>
     ));
@@ -93,8 +93,19 @@ export default ({ chord, name }) => {
       </Fragment>
     ));
 
+  const appendFingering = rows => [
+    ...rows,
+    <Fingering>
+      {_.chain(chord)
+        .map(
+          fret => (_.isArray(fret) ? (_.isNull(fret[1]) ? " " : fret[1]) : " ")
+        )
+        .value()}
+    </Fingering>
+  ];
+
   return (
-    <Chart>
+    <Chart onClick={() => onClick(chord, name)}>
       {_.chain()
         .thru(buildFretRange)
         .thru(buildFretRows)
