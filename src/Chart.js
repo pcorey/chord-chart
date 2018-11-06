@@ -53,15 +53,6 @@ export default ({ chord, name, onClick, selected }) => {
       <Wire>{`├${_.repeat("┼", chord.length - 2)}┤`}</Wire>
     ]);
 
-  const appendFingering = rows => [
-    ...rows,
-    <Fingering>
-      {_.chain(chord)
-        .map(fret => (_.isArray(fret) ? fret[1] : " "))
-        .value()}
-    </Fingering>
-  ];
-
   const attachLeftGutter = rows =>
     _.map(rows, (row, i) => (
       <Fragment>
