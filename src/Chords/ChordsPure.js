@@ -14,12 +14,12 @@ const OuterBox = styled.div`
   left: 0;
   margin: 0;
   width: 800px;
-  height: 80vh;
+  height: calc(100vh - 4em);
   padding: 10px;
   position: fixed;
   z-index: 3;
   left: calc(50vw - 400px);
-  top: 10vh;
+  top: 2em;
 `;
 
 const InnerBox = styled.div`
@@ -38,6 +38,8 @@ const ChordBox = styled.div`
   flex-wrap: wrap;
   overflow: auto;
   flex: 1;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const Controls = styled.div`
@@ -81,23 +83,27 @@ export default ({ chords, open, toggleOpen, setChord, drop, setDrop }) => (
                     <Chart chord={chord} onClick={() => setChord(chord)} />
                   </Chord>
                 ))
-                .take(50)
+                .take(21)
                 .value()}
             </ChordBox>
             <Controls>
               <Link
                 onClick={e => {
                   e.stopPropagation();
-                  setDrop(Math.max(0, drop - 50));
+                  setDrop(Math.max(0, drop - 21));
                 }}
               >
                 [previous]
               </Link>
+              <span>
+                {Math.floor(drop / 21) + 1}/{Math.ceil(chords.length / 21)}{" "}
+                pages.
+              </span>
               <Link
                 onClick={e => {
                   console.log("click");
                   e.stopPropagation();
-                  setDrop(Math.min(chords.length - 50, drop + 50));
+                  setDrop(Math.min(chords.length - 21, drop + 21));
                 }}
               >
                 [next]

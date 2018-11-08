@@ -6,6 +6,7 @@ const FRET_SIZE = `2px`;
 
 const Fretboard = styled.div`
   padding: 10px;
+  text-align: center;
 `;
 
 const Fret = styled.div`

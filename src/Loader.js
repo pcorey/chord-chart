@@ -19,14 +19,14 @@ export default class extends React.Component {
       .first()
       .value(),
     animation: [
-      /* { spinner: "/", message: "." },
-         * { spinner: "-", message: ".." },
-         * { spinner: "\\", message: "..." },
-         * { spinner: "|", message: ".." } */
-      { spinner: "◜", message: "." },
-      { spinner: "◝", message: ".." },
-      { spinner: "◞", message: "..." },
-      { spinner: "◟", message: ".." }
+      { spinner: "/", message: "." },
+      { spinner: "-", message: ".." },
+      { spinner: "\\", message: "..." },
+      { spinner: "|", message: ".." }
+      /* { spinner: "◜", message: "." },
+         * { spinner: "◝", message: ".." },
+         * { spinner: "◞", message: "..." },
+         * { spinner: "◟", message: ".." } */
     ]
   };
 

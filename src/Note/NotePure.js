@@ -62,6 +62,7 @@ const InnerBox = styled.div`
 const Top = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: center;
 `;
 
 const Bottom = styled.div`

@@ -1,10 +1,11 @@
 import Chart from "../Chart";
 import Chords from "../Chords";
 import Dropdown from "../Dropdown";
+import Fretboard from "../Fretboard";
 import Loader from "../Loader";
 import Note from "../Note";
-import Slider from "../Slider";
 import React from "react";
+import Slider from "../Slider";
 import _ from "lodash";
 import styled from "styled-components";
 
@@ -21,7 +22,7 @@ const getMinAndMax = chord =>
 const OuterBox = styled.div`
   background-color: #1d2021;
   padding: 10px;
-  margin: 0;
+  margin: 10px 0;
 `;
 
 const InnerBox = styled.div`
@@ -70,6 +71,10 @@ const Error = styled.span`
 
 const Label = styled.span`
   color: #aeb036;
+`;
+
+const Title = styled.span`
+  color: #c9ba9b;
 `;
 
 const InputRow = styled.div``;
@@ -227,14 +232,9 @@ export default ({
               {" }"}
             </InputRow>
             <br />
-            <InputRow>
-              <Label>Preset:</Label>{" "}
-              <Dropdown
-                options={Object.keys(presets)}
-                value={preset}
-                onChange={setPreset}
-              />
-            </InputRow>
+            <br />
+            <br />
+            <br />
             <br />
             <InputRow>
               <Label>Fluidity:</Label>{" "}
@@ -256,14 +256,6 @@ export default ({
                 key={invertedness}
               />
             </InputRow>
-            {/* <InputRow>
-                <Label>Spread:</Label>{" "}
-                <Slider value={spread} onChange={setSpread} key={spread} />
-                </InputRow>
-                <InputRow>
-                <Label>Reach:</Label>{" "}
-                <Slider value={reach} onChange={setReach} key={reach} />
-                </InputRow> */}
             {_.chain(chord)
               .thru(getMinAndMax)
               .thru(
@@ -285,13 +277,10 @@ export default ({
           </Middle>
           <Right>
             <RightTop>
-              <br />
-              <Link>?</Link> <Link>⛓</Link>
+              <Link>x</Link> {/*<Link>⛓</Link>*/}
             </RightTop>
             <RightBottom>
-              <Link onClick={() => addNext()}>+</Link> <Link>-</Link>
-              <br />
-              &nbsp;
+              <Link onClick={() => addNext()}>+</Link>
             </RightBottom>
           </Right>
         </InnerBox>

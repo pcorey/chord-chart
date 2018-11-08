@@ -41,7 +41,7 @@ const Bar = styled.div`
 
 export default ({ y, value, setValue, open, toggleOpen, onChange }) => (
   <Link onClick={toggleOpen}>
-    {Math.floor(value * 100)}%
+    {value.toFixed(2)}
     {open ? (
       <React.Fragment>
         <Cover
