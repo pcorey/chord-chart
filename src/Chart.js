@@ -20,7 +20,7 @@ const Fingering = styled.span``;
 const getMinAndMax = chord =>
   _.chain(chord)
     .map(string => (_.isArray(string) ? string[0] : string))
-    .reject(_.isNull)
+    .reject(note => !note)
     .thru(frets => ({
       min: _.min(frets) || 0,
       max: _.max(frets) || 0
@@ -35,15 +35,14 @@ export default ({ chord, name, onClick, selected }) => {
   const buildFretRows = frets =>
     _.map(frets, fret =>
       _.chain(_.range(chord.length))
-        .map(
-          string =>
-            (_.isArray(chord[string]) ? chord[string][0] : chord[string]) ==
-            fret ? (
-              <Finger>{fret == 0 ? "○" : "●"}</Finger>
-            ) : (
-              <Wire>{fret == 0 ? "┬" : "│"}</Wire>
-            )
-        )
+        .map(string => {
+          let f = _.isArray(chord[string]) ? chord[string][0] : chord[string];
+          return f == fret || (f == 0 && fret == min) ? (
+            <Finger key={`${fret}-${string}`}>{f == 0 ? "○" : "●"}</Finger>
+          ) : (
+            <Wire key={`${fret}-${string}`}>{fret == 0 ? "┬" : "│"}</Wire>
+          );
+        })
         .value()
     );
 
@@ -77,8 +76,8 @@ export default ({ chord, name, onClick, selected }) => {
     ));
 
   const joinRows = rows =>
-    _.map(rows, row => (
-      <Fragment>
+    _.map(rows, (row, i) => (
+      <Fragment key={i}>
         {row}
         <br />
       </Fragment>

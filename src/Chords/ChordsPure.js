@@ -14,23 +14,38 @@ const OuterBox = styled.div`
   left: 0;
   margin: 0;
   width: 800px;
-  height: 60vh;
+  height: 80vh;
   padding: 10px;
   position: fixed;
   z-index: 3;
   left: calc(50vw - 400px);
-  top: 20vh;
+  top: 10vh;
 `;
 
 const InnerBox = styled.div`
   height: 100%;
   background-color: #1d2021;
+  /* border: 2px solid #ebb23f; */
   border: 2px solid #3c3836;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ChordBox = styled.div`
   white-space: nowrap;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   overflow: auto;
+  flex: 1;
+`;
+
+const Controls = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 1em;
+  /* border-top: 2px solid #ebb23f; */
+  border-top: 2px solid #3c3836;
 `;
 
 const Chord = styled.div`
@@ -50,7 +65,7 @@ const Cover = styled.div`
   right: -100vw;
 `;
 
-export default ({ chords, open, toggleOpen, setChord }) => (
+export default ({ chords, open, toggleOpen, setChord, drop, setDrop }) => (
   <Link onClick={toggleOpen}>
     {"   "}[change]
     {open ? (
@@ -58,13 +73,36 @@ export default ({ chords, open, toggleOpen, setChord }) => (
         <Cover onClick={toggleOpen} />
         <OuterBox>
           <InnerBox>
-            {_.chain(chords)
-              .map(chord => (
-                <Chord>
-                  <Chart chord={chord} onClick={() => setChord(chord)} />
-                </Chord>
-              ))
-              .value()}
+            <ChordBox>
+              {_.chain(chords)
+                .drop(drop)
+                .map(chord => (
+                  <Chord>
+                    <Chart chord={chord} onClick={() => setChord(chord)} />
+                  </Chord>
+                ))
+                .take(50)
+                .value()}
+            </ChordBox>
+            <Controls>
+              <Link
+                onClick={e => {
+                  e.stopPropagation();
+                  setDrop(Math.max(0, drop - 50));
+                }}
+              >
+                [previous]
+              </Link>
+              <Link
+                onClick={e => {
+                  console.log("click");
+                  e.stopPropagation();
+                  setDrop(Math.min(chords.length - 50, drop + 50));
+                }}
+              >
+                [next]
+              </Link>
+            </Controls>
           </InnerBox>
         </OuterBox>
       </React.Fragment>

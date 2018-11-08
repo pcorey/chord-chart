@@ -3,14 +3,41 @@ import _ from "lodash";
 import gql from "graphql-tag";
 import { Query } from "react-apollo";
 
-export default ({ children, notes, from }) => (
+export default ({
+  children,
+  notes,
+  from,
+  fluidity = 1,
+  playability = 1,
+  invertedness = 1,
+  spread = 1,
+  reach = 1,
+  allowOpen = true
+}) => (
   <Query
     query={gql`
-      query chord($required: [Int], $optional: [Int], $from: InputChord) {
-        chords(required: $required, optional: $optional, from: $from) {
-          name
-          frets
-          fingerings
+      query chord(
+        $required: [Int]
+        $optional: [Int]
+        $from: InputChord
+        $fluidity: Float
+        $playability: Float
+        $invertedness: Float
+        $spread: Float
+        $reach: Float
+      ) {
+        chords(
+          required: $required
+          optional: $optional
+          from: $from
+          fluidity: $fluidity
+          playability: $playability
+          invertedness: $invertedness
+          spread: $spread
+          reach: $reach
+        ) {
+          score
+          chord
         }
       }
     `}
@@ -21,7 +48,12 @@ export default ({ children, notes, from }) => (
       optional: _.chain(notes)
         .filter(_.isArray)
         .map(([_, note]) => note),
-      from
+      from,
+      fluidity,
+      playability,
+      invertedness,
+      spread,
+      reach
     }}
   >
     {({ loading, error, data }) => children({ loading, error, data })}

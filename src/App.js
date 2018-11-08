@@ -1,7 +1,9 @@
 import ApolloClient from "apollo-boost";
 import Chord from "./Chord";
+import Header from "./Header";
 import React, { Component } from "react";
 import _ from "lodash";
+import presets from "./presets";
 import styled from "styled-components";
 import { ApolloProvider } from "react-apollo";
 
@@ -17,10 +19,8 @@ const App = styled.div`
 export default () => (
   <App>
     <ApolloProvider client={client}>
-      <Chord
-        chord={[null, [10, 2], [10, 3], [8, 1], [12, 4], null]}
-        notes={[0, 3, ["optional", 7], 71]}
-      />
+      <Header />
+      <Chord presets={presets} />
     </ApolloProvider>
   </App>
 );

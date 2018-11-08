@@ -19,14 +19,14 @@ export default class extends React.Component {
     this.setState({
       note: this.state.octave == "Any" ? note : this.state.octave * 12 + note
     });
-  setOptional = optional => this.setState({ optional: optional == "Yes" });
+  setOptional = optional => this.setState({ optional });
   setOctave = octave =>
     this.setState({
       octave,
       note:
         octave == "Any"
           ? this.state.note % 12
-          : this.state.note % 12 + 12 * parseInt(octave)
+          : this.state.note % 12 + 12 * (parseInt(octave) + 1)
     });
 
   render() {

@@ -3,6 +3,7 @@ import Chords from "../Chords";
 import Dropdown from "../Dropdown";
 import Loader from "../Loader";
 import Note from "../Note";
+import Slider from "../Slider";
 import React from "react";
 import _ from "lodash";
 import styled from "styled-components";
@@ -10,7 +11,7 @@ import styled from "styled-components";
 const getMinAndMax = chord =>
   _.chain(chord)
     .map(string => (_.isArray(string) ? string[0] : string))
-    .reject(_.isNull)
+    .reject(_.identity)
     .thru(frets => ({
       min: _.min(frets),
       max: _.max(frets)
@@ -20,7 +21,7 @@ const getMinAndMax = chord =>
 const OuterBox = styled.div`
   background-color: #1d2021;
   padding: 10px;
-  margin: 10px;
+  margin: 0;
 `;
 
 const InnerBox = styled.div`
@@ -85,32 +86,49 @@ export default ({
   setChord,
   hasNext,
   addNext,
-  Chord
+  Chord,
+  pressKey,
+  releaseKey,
+  presets,
+  preset,
+  setPreset,
+  fluidity,
+  playability,
+  invertedness,
+  spread,
+  reach,
+  setFluidity,
+  setPlayability,
+  setInvertedness,
+  setSpread,
+  setReach,
+  loadingParent,
+  allowOpen,
+  setAllowOpen
 }) => {
   if (
     _.chain(data)
       .get("chords")
+      .map("chord")
       .first()
       .value() &&
     !_.chain(data)
       .get("chords")
-      .map("fingerings")
-      .flatten()
+      .map("chord")
       .includes(chord)
       .value()
   ) {
     setChord(
       _.chain(data)
         .get("chords")
-        .first()
-        .get("fingerings")
+        .map("chord")
         .first()
         .value()
     );
   }
   return (
     <React.Fragment>
-      <OuterBox>
+      <OuterBox style={{ opacity: loadingParent ? "0.5" : "1" }}>
         <InnerBox
           tabIndex="0"
           onKeyDown={event =>
@@ -158,6 +176,16 @@ export default ({
                     return addNote(4);
                   case "'":
                     return addNote(5);
+                  case "2":
+                  case "3":
+                  case "4":
+                  case "5":
+                    var note = _.last(notes);
+                    var octave = parseInt(key);
+                    return addNote(note % 12 + (octave + 1) * 12);
+                  case "?":
+                    var note = _.last(notes);
+                    return addNote(["optional", note]);
                   default:
                     return undefined;
                 }
@@ -170,8 +198,7 @@ export default ({
             <Chords
               chords={_.chain(data)
                 .get("chords")
-                .map(chord => chord.fingerings)
-                .flatten()
+                .map("chord")
                 .value()}
               setChord={setChord}
             />
@@ -183,8 +210,9 @@ export default ({
               {" { "}
               {_.chain(notes)
                 .map(note => (
-                  <Link>
+                  <Link key={`foo-${JSON.stringify(note)}`}>
                     <Note
+                      key={`note-${JSON.stringify(note)}`}
                       note={_.isArray(note) ? note[1] : note}
                       optional={_.isArray(note) ? note[0] == "optional" : false}
                       onUpdate={addNote}
@@ -192,8 +220,8 @@ export default ({
                     />
                   </Link>
                 ))
-                .concat(<Note onUpdate={addNote} />)
-                .flatMap(note => [<span>, </span>, note])
+                .concat(<Note key="new-note" onUpdate={addNote} />)
+                .flatMap((note, i) => [<span key={i}>, </span>, note])
                 .drop(1)
                 .value()}
               {" }"}
@@ -202,41 +230,45 @@ export default ({
             <InputRow>
               <Label>Preset:</Label>{" "}
               <Dropdown
-                options={[
-                  "Pete's Magic Sauce",
-                  "Playability be Damned",
-                  "Keep it Together"
-                ]}
-                value={_.chain([
-                  "Pete's Magic Sauce",
-                  "Playability be Damned",
-                  "Keep it Together"
-                ])
-                  .shuffle()
-                  .first()
-                  .value()}
+                options={Object.keys(presets)}
+                value={preset}
+                onChange={setPreset}
               />
             </InputRow>
             <br />
             <InputRow>
               <Label>Fluidity:</Label>{" "}
-              <Link>{Math.floor(Math.random() * 100)}%</Link>
+              <Slider value={fluidity} onChange={setFluidity} key={fluidity} />
+            </InputRow>
+            <InputRow>
+              <Label>Playability:</Label>{" "}
+              <Slider
+                value={playability}
+                onChange={setPlayability}
+                key={playability}
+              />
             </InputRow>
             <InputRow>
               <Label>Invertedness:</Label>{" "}
-              <Link>{Math.floor(Math.random() * 100)}%</Link>
+              <Slider
+                value={invertedness}
+                onChange={setInvertedness}
+                key={invertedness}
+              />
             </InputRow>
-            <InputRow>
-              <Label>Spread:</Label>{" "}
-              <Link>{Math.floor(Math.random() * 100)}%</Link>
-            </InputRow>
-            <InputRow>
-              <Label>Reach:</Label>{" "}
-              <Link>{Math.floor(Math.random() * 100)}%</Link>
-            </InputRow>
+            {/* <InputRow>
+                <Label>Spread:</Label>{" "}
+                <Slider value={spread} onChange={setSpread} key={spread} />
+                </InputRow>
+                <InputRow>
+                <Label>Reach:</Label>{" "}
+                <Slider value={reach} onChange={setReach} key={reach} />
+                </InputRow> */}
             {_.chain(chord)
               .thru(getMinAndMax)
-              .thru(({ min, max }) => _.range(Math.max(1, max - min - 3) * 2))
+              .thru(
+                ({ min, max }) => _.range(Math.max(0, max - min - 3) * 2) + 1
+              )
               .map((_, i) => <br key={i} />)
               .value()}
             <InputRow>
@@ -264,7 +296,13 @@ export default ({
           </Right>
         </InnerBox>
       </OuterBox>
-      {hasNext ? <Chord from={chord} /> : null}
+      {hasNext ? (
+        <Chord
+          from={chord}
+          presets={presets}
+          loadingParent={loading || loadingParent}
+        />
+      ) : null}
     </React.Fragment>
   );
 };
