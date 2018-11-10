@@ -3,8 +3,17 @@ import ChordData from "./ChordData";
 import ChordPure from "./ChordPure";
 import React from "react";
 
-const Chord = ({ from, notes, presets, loadingParent }) => (
-  <ChordContainer presets={presets}>
+const Chord = ({
+  from,
+  notes,
+  loadingParent,
+  addChord,
+  removeChord,
+  setChord,
+  setNotes,
+  setLoading
+}) => (
+  <ChordContainer setChord={setChord} setNotes={setNotes}>
     {({
       notes,
       addNote,
@@ -15,7 +24,6 @@ const Chord = ({ from, notes, presets, loadingParent }) => (
       addNext,
       pressKey,
       releaseKey,
-      presets,
       preset,
       setPreset,
       fluidity,
@@ -40,6 +48,7 @@ const Chord = ({ from, notes, presets, loadingParent }) => (
         spread={spread}
         reach={reach}
         allowOpen={allowOpen}
+        setLoading={setLoading}
       >
         {({ loading, error, data }) => (
           <ChordPure
@@ -56,7 +65,6 @@ const Chord = ({ from, notes, presets, loadingParent }) => (
             Chord={Chord}
             pressKey={pressKey}
             releaseKey={releaseKey}
-            presets={presets}
             preset={preset}
             setPreset={setPreset}
             fluidity={fluidity}
@@ -72,6 +80,8 @@ const Chord = ({ from, notes, presets, loadingParent }) => (
             loadingParent={loadingParent}
             allowOpen={allowOpen}
             setAllowOpen={setAllowOpen}
+            addChord={addChord}
+            removeChord={removeChord}
           />
         )}
       </ChordData>

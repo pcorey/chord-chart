@@ -28,6 +28,7 @@ const Info = styled.span`
 
 const Label = styled.span`
   color: #aeb036;
+  color: #ebb23f;
 `;
 
 const Cover = styled.div`

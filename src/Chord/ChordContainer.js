@@ -1,28 +1,29 @@
 import React from "react";
 import _ from "lodash";
+import presets from "../presets";
 
 export default class extends React.Component {
   state = {
-    presets: this.props.presets,
-    preset: this.props.preset || _.first(Object.keys(this.props.presets)),
-    fluidity: _.chain(this.props.presets)
-      .get(this.props.preset || _.first(Object.keys(this.props.presets)))
+    presets,
+    preset: this.props.preset || _.first(Object.keys(presets)),
+    fluidity: _.chain(presets)
+      .get(this.props.preset || _.first(Object.keys(presets)))
       .get("fluidity")
       .value(),
-    playability: _.chain(this.props.presets)
-      .get(this.props.preset || _.first(Object.keys(this.props.presets)))
+    playability: _.chain(presets)
+      .get(this.props.preset || _.first(Object.keys(presets)))
       .get("playability")
       .value(),
-    invertedness: _.chain(this.props.presets)
-      .get(this.props.preset || _.first(Object.keys(this.props.presets)))
+    invertedness: _.chain(presets)
+      .get(this.props.preset || _.first(Object.keys(presets)))
       .get("invertedness")
       .value(),
-    spread: _.chain(this.props.presets)
-      .get(this.props.preset || _.first(Object.keys(this.props.presets)))
+    spread: _.chain(presets)
+      .get(this.props.preset || _.first(Object.keys(presets)))
       .get("spread")
       .value(),
-    reach: _.chain(this.props.presets)
-      .get(this.props.preset || _.first(Object.keys(this.props.presets)))
+    reach: _.chain(presets)
+      .get(this.props.preset || _.first(Object.keys(presets)))
       .get("reach")
       .value(),
     allowOpen: true,
@@ -38,23 +39,23 @@ export default class extends React.Component {
   setPreset = preset => {
     this.setState({
       preset: preset,
-      fluidity: _.chain(this.props.presets)
+      fluidity: _.chain(presets)
         .get(preset)
         .get("fluidity")
         .value(),
-      playability: _.chain(this.props.presets)
+      playability: _.chain(presets)
         .get(preset)
         .get("playability")
         .value(),
-      invertedness: _.chain(this.props.presets)
+      invertedness: _.chain(presets)
         .get(preset)
         .get("invertedness")
         .value(),
-      spread: _.chain(this.props.presets)
+      spread: _.chain(presets)
         .get(preset)
         .get("spread")
         .value(),
-      reach: _.chain(this.props.presets)
+      reach: _.chain(presets)
         .get(preset)
         .get("reach")
         .value()
@@ -229,13 +230,15 @@ export default class extends React.Component {
 
   addNote = (note, without) => {
     const getNote = n => (_.isArray(n) ? n[1] % 12 : n % 12);
+    let notes = _.chain(this.state.notes)
+      .reject(n => getNote(n) == getNote(note))
+      .concat([note])
+      .uniq()
+      .value();
     this.setState({
-      notes: _.chain(this.state.notes)
-        .reject(n => getNote(n) == getNote(note))
-        .concat([note])
-        .uniq()
-        .value()
+      notes
     });
+    this.props.setNotes(notes);
   };
 
   removeNote = note => {
@@ -246,7 +249,10 @@ export default class extends React.Component {
     });
   };
 
-  setChord = chord => this.setState({ chord });
+  setChord = chord => {
+    this.props.setChord(chord);
+    this.setState({ chord });
+  };
 
   addNext = () => this.setState({ hasNext: true });
 

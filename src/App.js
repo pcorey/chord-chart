@@ -1,7 +1,8 @@
 import ApolloClient from "apollo-boost";
-import Chord from "./Chord";
+import Chords from "./Chords";
 import Header from "./Header";
 import React, { Component } from "react";
+import Title from "./Title";
 import _ from "lodash";
 import presets from "./presets";
 import styled from "styled-components";
@@ -13,14 +14,15 @@ const client = new ApolloClient({
 
 const App = styled.div`
   max-width: 800px;
-  margin: 40px auto;
+  margin: 2em auto;
 `;
 
 export default () => (
   <App>
     <ApolloProvider client={client}>
-      <Header />
-      <Chord presets={presets} />
+      <Title />
+      {/* <Header /> */}
+      <Chords />
     </ApolloProvider>
   </App>
 );

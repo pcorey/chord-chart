@@ -30,7 +30,7 @@ const getMinAndMax = chord =>
 export default ({ chord, name, onClick, selected }) => {
   let { min, max } = getMinAndMax(chord);
 
-  const buildFretRange = () => _.range(min, Math.max(max + 1, min + 5));
+  const buildFretRange = () => _.range(min, Math.max(max + 1, min + 4));
 
   const buildFretRows = frets =>
     _.map(frets, fret =>

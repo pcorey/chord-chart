@@ -12,7 +12,8 @@ export default ({
   invertedness = 1,
   spread = 1,
   reach = 1,
-  allowOpen = true
+  allowOpen = true,
+  setLoading
 }) => (
   <Query
     query={gql`
@@ -56,6 +57,9 @@ export default ({
       reach
     }}
   >
-    {({ loading, error, data }) => children({ loading, error, data })}
+    {({ loading, error, data }) => {
+      setLoading(loading);
+      return children({ loading, error, data });
+    }}
   </Query>
 );

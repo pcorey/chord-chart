@@ -4,14 +4,14 @@ import React from "react";
 
 export default ({ chords, value, setChord }) => (
   <ChordsContainer>
-    {({ open, toggleOpen, onChange, drop, setDrop }) => (
+    {({ chords, addChord, removeChord, setChord, setNotes, setLoading }) => (
       <ChordsPure
         chords={chords}
-        open={open}
-        toggleOpen={toggleOpen}
+        addChord={addChord}
+        removeChord={removeChord}
         setChord={setChord}
-        drop={drop}
-        setDrop={setDrop}
+        setNotes={setNotes}
+        setLoading={setLoading}
       />
     )}
   </ChordsContainer>

@@ -1,5 +1,5 @@
 import Chart from "../Chart";
-import Chords from "../Chords";
+import ChordBook from "../ChordBook";
 import Dropdown from "../Dropdown";
 import Fretboard from "../Fretboard";
 import Loader from "../Loader";
@@ -43,7 +43,15 @@ const Left = styled.div`
 
 const Middle = styled.div`
   flex: 1;
+  display: flex;
+  flex-direction: column;
 `;
+
+const MiddleTop = styled.div`
+  flex: 1;
+`;
+
+const MiddleBottom = styled.div``;
 
 const Right = styled.div`
   display: flex;
@@ -71,6 +79,7 @@ const Error = styled.span`
 
 const Label = styled.span`
   color: #aeb036;
+  color: #ebb23f;
 `;
 
 const Title = styled.span`
@@ -94,7 +103,6 @@ export default ({
   Chord,
   pressKey,
   releaseKey,
-  presets,
   preset,
   setPreset,
   fluidity,
@@ -109,9 +117,13 @@ export default ({
   setReach,
   loadingParent,
   allowOpen,
-  setAllowOpen
+  setAllowOpen,
+  addChord,
+  removeChord
 }) => {
   if (
+    !loading &&
+    !error &&
     _.chain(data)
       .get("chords")
       .map("chord")
@@ -131,9 +143,26 @@ export default ({
         .value()
     );
   }
+  if (
+    !loading &&
+    !error &&
+    _.chain(data)
+      .get("chords")
+      .isEmpty()
+      .value() &&
+    !_.isEqual(chord, [null, null, null, null, null, null])
+  ) {
+    setChord([null, null, null, null, null, null]);
+  }
   return (
     <React.Fragment>
-      <OuterBox style={{ opacity: loadingParent ? "0.5" : "1" }}>
+      <OuterBox
+        style={{
+          opacity: loadingParent ? "0.5" : "1",
+          pointerEvents: loadingParent ? "none" : "auto"
+        }}
+        ref={box => (this.box = box)}
+      >
         <InnerBox
           tabIndex="0"
           onKeyDown={event =>
@@ -144,7 +173,7 @@ export default ({
                   case "Delete":
                     return removeNote(_.last(notes));
                   case "+":
-                    return addNext();
+                    return addChord();
                   case "a":
                     return addNote(0);
                   case "w":
@@ -199,8 +228,11 @@ export default ({
           }
         >
           <Left>
-            <Chart chord={chord || [null, null, null, null, null, null]} />
-            <Chords
+            <Chart
+              chord={chord || [null, null, null, null, null, null]}
+              onClick={() => {}}
+            />
+            <ChordBook
               chords={_.chain(data)
                 .get("chords")
                 .map("chord")
@@ -209,89 +241,89 @@ export default ({
             />
           </Left>
           <Middle>
-            <br />
-            <InputRow>
-              <Label>Notes:</Label>
-              {" { "}
-              {_.chain(notes)
-                .map(note => (
-                  <Link key={`foo-${JSON.stringify(note)}`}>
-                    <Note
-                      key={`note-${JSON.stringify(note)}`}
-                      note={_.isArray(note) ? note[1] : note}
-                      optional={_.isArray(note) ? note[0] == "optional" : false}
-                      onUpdate={addNote}
-                      onRemove={removeNote}
-                    />
-                  </Link>
-                ))
-                .concat(<Note key="new-note" onUpdate={addNote} />)
-                .flatMap((note, i) => [<span key={i}>, </span>, note])
-                .drop(1)
+            <MiddleTop>
+              <br />
+              <InputRow>
+                <Label>Notes:</Label>
+                {" { "}
+                {_.chain(notes)
+                  .map(note => (
+                    <Link key={`foo-${JSON.stringify(note)}`}>
+                      <Note
+                        key={`note-${JSON.stringify(note)}`}
+                        note={_.isArray(note) ? note[1] : note}
+                        optional={
+                          _.isArray(note) ? note[0] == "optional" : false
+                        }
+                        onUpdate={addNote}
+                        onRemove={removeNote}
+                      />
+                    </Link>
+                  ))
+                  .concat(<Note key="new-note" onUpdate={addNote} />)
+                  .flatMap((note, i) => [<span key={i}>, </span>, note])
+                  .drop(1)
+                  .value()}
+                {" }"}
+              </InputRow>
+            </MiddleTop>
+            <MiddleBottom>
+              <InputRow>
+                <Label>Fluidity:</Label>{" "}
+                <Slider
+                  value={fluidity}
+                  onChange={setFluidity}
+                  key={fluidity}
+                />
+              </InputRow>
+              <InputRow>
+                <Label>Playability:</Label>{" "}
+                <Slider
+                  value={playability}
+                  onChange={setPlayability}
+                  key={playability}
+                />
+              </InputRow>
+              <InputRow>
+                <Label>Invertedness:</Label>{" "}
+                <Slider
+                  value={invertedness}
+                  onChange={setInvertedness}
+                  key={invertedness}
+                />
+              </InputRow>
+              {_.chain(chord)
+                .thru(getMinAndMax)
+                .thru(
+                  ({ min, max }) => _.range(Math.max(0, max - min - 3) * 2) + 1
+                )
+                .map((_, i) => <br key={i} />)
                 .value()}
-              {" }"}
-            </InputRow>
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-            <InputRow>
-              <Label>Fluidity:</Label>{" "}
-              <Slider value={fluidity} onChange={setFluidity} key={fluidity} />
-            </InputRow>
-            <InputRow>
-              <Label>Playability:</Label>{" "}
-              <Slider
-                value={playability}
-                onChange={setPlayability}
-                key={playability}
-              />
-            </InputRow>
-            <InputRow>
-              <Label>Invertedness:</Label>{" "}
-              <Slider
-                value={invertedness}
-                onChange={setInvertedness}
-                key={invertedness}
-              />
-            </InputRow>
-            {_.chain(chord)
-              .thru(getMinAndMax)
-              .thru(
-                ({ min, max }) => _.range(Math.max(0, max - min - 3) * 2) + 1
-              )
-              .map((_, i) => <br key={i} />)
-              .value()}
-            <InputRow>
-              {error ? (
-                <Error>{error.toString()}</Error>
-              ) : loading ? (
-                <Info>
-                  <Loader />
-                </Info>
-              ) : (
-                <Info>Who needs a chord book when you've got a computer?</Info>
-              )}
-            </InputRow>
+              <InputRow>
+                {error ? (
+                  <Error>{error.toString()}</Error>
+                ) : loading ? (
+                  <Info>
+                    <Loader />
+                  </Info>
+                ) : (
+                  <Info>
+                    Who needs a chord book when you've got a computer?
+                  </Info>
+                )}
+              </InputRow>
+            </MiddleBottom>
           </Middle>
           <Right>
             <RightTop>
-              <Link>x</Link> {/*<Link>⛓</Link>*/}
+              <Link onClick={() => removeChord()}>x</Link> {/*<Link>⛓</Link>*/}
             </RightTop>
             <RightBottom>
-              <Link onClick={() => addNext()}>+</Link>
+              <Link onClick={() => addChord()}>+</Link>
             </RightBottom>
           </Right>
         </InnerBox>
       </OuterBox>
-      {hasNext ? (
-        <Chord
-          from={chord}
-          presets={presets}
-          loadingParent={loading || loadingParent}
-        />
-      ) : null}
     </React.Fragment>
   );
 };

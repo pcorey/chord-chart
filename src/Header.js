@@ -11,12 +11,34 @@ const OuterBox = styled.div`
 
 const InnerBox = styled.div`
   height: 100%;
-  /* background-color: #1d2021; */
-  /* border: 2px solid #3c3836; */
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 10px;
+  background-color: #1d2021;
+  border: 2px solid #3c3836;
+`;
+
+const Link = styled.span`
+  color: #7e9d91;
+  cursor: pointer;
+  white-space: pre;
+`;
+
+const Pro = styled.span`
+  color: #ea483a;
+  cursor: pointer;
+  white-space: pre;
 `;
 
 export default () => (
   <OuterBox>
-    <InnerBox>hi</InnerBox>
+    <InnerBox>
+      <Link> [hotkeys]</Link>
+      <Link> [faq]</Link>
+      <Link> [tunes]</Link>
+      <Link> [about]</Link>
+      <Pro> [pro]</Pro>
+    </InnerBox>
   </OuterBox>
 );
