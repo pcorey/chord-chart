@@ -56,12 +56,23 @@ const getNoteOctave = note => {
   }
 };
 
-const getNoteOption = optional => (optional ? "(?)" : "");
+const getNoteOption = option => {
+  switch (option) {
+    case "optional":
+      return "(?)";
+    case "highest":
+      return "($)";
+    case "lowest":
+      return "(^)";
+    default:
+      return "";
+  }
+};
 
-export default ({ note, optional }) => (
+export default ({ note, option }) => (
   <span>
     {getNoteName(note)}
-    {getNoteOption(optional)}
+    {getNoteOption(option)}
     {getNoteOctave(note)}
   </span>
 );

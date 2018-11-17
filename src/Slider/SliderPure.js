@@ -23,6 +23,10 @@ const InnerBox = styled.div`
   border: 2px solid #3c3836;
   white-space: nowrap;
   z-index: 4;
+  outline: none;
+  &:focus {
+    border: 2px solid #ebb23f;
+  }
 `;
 
 const Cover = styled.div`
@@ -35,35 +39,46 @@ const Cover = styled.div`
 `;
 
 const Bar = styled.div`
-  background-color: tomato;
+  background-color: #7e9d91;
   height: 1em;
 `;
 
-export default ({ y, value, setValue, open, toggleOpen, onChange }) => (
-  <Link onClick={toggleOpen}>
-    {value.toFixed(2)}
-    {open ? (
-      <React.Fragment>
-        <Cover
-          onClick={() => {
-            toggleOpen();
-            onChange(value);
-          }}
-        />
-        <OuterBox>
-          <InnerBox
-            onClick={e => {
-              let { left } = e.target.getBoundingClientRect();
-              setValue(y((e.clientX - left) / 96));
-              e.stopPropagation();
-              return false;
-            }}
-            style={{ width: `100px` }}
-          >
-            <Bar style={{ width: `${value * 96}px` }} />
-          </InnerBox>
-        </OuterBox>
-      </React.Fragment>
-    ) : null}
-  </Link>
-);
+export default class extends React.Component {
+  componentDidUpdate() {
+    this.ref && this.ref.focus();
+  }
+
+  render() {
+    let { y, value, setValue, open, toggleOpen, onChange } = this.props;
+    return (
+      <Link onClick={toggleOpen}>
+        {(value * 10).toFixed(1)}x
+        {open ? (
+          <React.Fragment>
+            <Cover
+              onClick={() => {
+                toggleOpen();
+                onChange(value);
+              }}
+            />
+            <OuterBox>
+              <InnerBox
+                tabIndex="0"
+                innerRef={ref => (this.ref = ref)}
+                onClick={e => {
+                  let { left } = e.target.getBoundingClientRect();
+                  setValue(Math.min(1, y((e.clientX - left) / 96)));
+                  e.stopPropagation();
+                  return false;
+                }}
+                style={{ width: `100px` }}
+              >
+                <Bar style={{ width: `${value * 96}px` }} />
+              </InnerBox>
+            </OuterBox>
+          </React.Fragment>
+        ) : null}
+      </Link>
+    );
+  }
+}

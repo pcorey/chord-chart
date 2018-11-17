@@ -5,7 +5,7 @@ export default class extends React.Component {
   state = {
     open: false,
     note: this.props.note || 0,
-    optional: this.props.optional || false,
+    option: this.props.option,
     octave: Math.floor((this.props.note || 0) / 12)
   };
 
@@ -19,12 +19,14 @@ export default class extends React.Component {
     this.setState({
       note: this.state.octave == "Any" ? note : this.state.octave * 12 + note
     });
-  setOptional = optional => this.setState({ optional });
+
+  setOption = option => this.setState({ option });
+
   setOctave = octave =>
     this.setState({
       octave,
       note:
-        octave == "Any"
+        octave == 0
           ? this.state.note % 12
           : this.state.note % 12 + 12 * (parseInt(octave) + 1)
     });
@@ -35,8 +37,8 @@ export default class extends React.Component {
       toggleOpen: this.toggleOpen,
       note: this.state.note,
       setNote: this.setNote,
-      optional: this.state.optional,
-      setOptional: this.setOptional,
+      option: this.state.option,
+      setOption: this.setOption,
       octave: this.state.octave,
       setOctave: this.setOctave
     });

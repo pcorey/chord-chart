@@ -58,6 +58,10 @@ const InnerBox = styled.div`
   background-color: #1d2021;
   border: 2px solid #3c3836;
   white-space: nowrap;
+  outline: none;
+  &:focus {
+    border: 2px solid #ebb23f;
+  }
 `;
 
 const Top = styled.div`
@@ -77,124 +81,168 @@ const Bottom = styled.div`
   }
 `;
 
-export default ({
-  open,
-  toggleOpen,
-  note,
-  setNote,
-  optional,
-  setOptional,
-  octave,
-  setOctave,
-  originalNote,
-  originalOptional,
-  onRemove,
-  onUpdate
-}) => (
-  <Link onClick={toggleOpen}>
-    {originalNote === undefined ? (
-      <span>+</span>
-    ) : (
-      <NoteName note={originalNote} optional={originalOptional} />
-    )}
-    {open ? (
-      <React.Fragment>
-        <Cover onClick={toggleOpen} />
-        <OuterBox>
-          <InnerBox
-            onClick={e => {
-              e.stopPropagation();
-              return false;
-            }}
-          >
-            <Top>
-              <Left>
-                <InputRow>
-                  <Label>Note: </Label>
-                  <Dropdown
-                    options={[
-                      { label: "C", value: 0 },
-                      { label: "C♯/D♭", value: 1 },
-                      { label: "D", value: 2 },
-                      { label: "D♯/E♭", value: 3 },
-                      { label: "E", value: 4 },
-                      { label: "F", value: 5 },
-                      { label: "F♯/G♭", value: 6 },
-                      { label: "G", value: 7 },
-                      { label: "G♯/A♭", value: 8 },
-                      { label: "A", value: 9 },
-                      { label: "A♯/B♭", value: 10 },
-                      { label: "B", value: 11 }
-                    ]}
-                    value={note !== undefined ? note % 12 : 0}
-                    onChange={setNote}
-                  />
-                </InputRow>
-                <InputRow>
-                  <Label>Optional: </Label>
-                  <Dropdown
-                    options={[
-                      { label: "Yes", value: true },
-                      { label: "No", value: false }
-                    ]}
-                    value={optional}
-                    onChange={setOptional}
-                  />
-                </InputRow>
-                <InputRow>
-                  <Label>Octave: </Label>
-                  <Dropdown
-                    options={[
-                      { label: "Any", value: 0 },
-                      { label: "2", value: 2 },
-                      { label: "3", value: 3 },
-                      { label: "4", value: 4 },
-                      { label: "5", value: 5 }
-                    ]}
-                    value={octave}
-                    onChange={setOctave}
-                  />
-                </InputRow>
-              </Left>
-              <Right>
-                <Fretboard
-                  note={note ? note % 12 : 0}
-                  octave={Math.floor((note || 0) / 12)}
-                />
-              </Right>
-            </Top>
-            <Bottom>
-              {originalNote !== undefined ? (
-                <Link
-                  onClick={() => {
-                    onRemove(
-                      originalOptional
-                        ? ["optional", originalNote || 0]
-                        : originalNote || 0
-                    );
-                    toggleOpen();
-                  }}
-                >
-                  [remove]
-                </Link>
-              ) : (
-                <Link />
-              )}
-              <Link
-                onClick={() => {
-                  onUpdate(
-                    optional ? ["optional", note || 0] : note || 0,
-                    originalOptional ? ["optional", originalNote] : originalNote
-                  );
-                  toggleOpen();
+export default class extends React.Component {
+  componentDidUpdate() {
+    this.ref && this.ref.focus();
+  }
+
+  render() {
+    let {
+      open,
+      toggleOpen,
+      note,
+      setNote,
+      option,
+      setOption,
+      octave,
+      setOctave,
+      originalNote,
+      originalOption,
+      onRemove,
+      onUpdate
+    } = this.props;
+    return (
+      <Link onClick={toggleOpen}>
+        {originalNote === undefined ? (
+          <span>+</span>
+        ) : (
+          <NoteName note={originalNote} option={originalOption} />
+        )}
+        {open ? (
+          <React.Fragment>
+            <Cover onClick={toggleOpen} />
+            <OuterBox
+              onClick={event => {
+                event.stopPropagation();
+                return false;
+              }}
+            >
+              <InnerBox
+                tabIndex="0"
+                innerRef={ref => (this.ref = ref)}
+                onKeyDown={event => {
+                  switch (event.key) {
+                    case "?":
+                      setOption("optional");
+                      break;
+                    case "$":
+                      setOption("highest");
+                      break;
+                    case "^":
+                      setOption("lowest");
+                      break;
+                    case "0":
+                    case "1":
+                    case "2":
+                    case "3":
+                    case "4":
+                    case "5":
+                      setOctave(parseInt(event.key));
+                      break;
+                    default:
+                      break;
+                  }
+                  event.stopPropagation();
                 }}
               >
-                {originalNote === undefined ? "[add]" : "[update]"}
-              </Link>
-            </Bottom>
-          </InnerBox>
-        </OuterBox>
-      </React.Fragment>
-    ) : null}
-  </Link>
-);
+                <Top>
+                  <Left>
+                    <InputRow>
+                      <Label>Note: </Label>
+                      <Dropdown
+                        options={[
+                          { label: "C", value: 0 },
+                          { label: "C♯/D♭", value: 1 },
+                          { label: "D", value: 2 },
+                          { label: "D♯/E♭", value: 3 },
+                          { label: "E", value: 4 },
+                          { label: "F", value: 5 },
+                          { label: "F♯/G♭", value: 6 },
+                          { label: "G", value: 7 },
+                          { label: "G♯/A♭", value: 8 },
+                          { label: "A", value: 9 },
+                          { label: "A♯/B♭", value: 10 },
+                          { label: "B", value: 11 }
+                        ]}
+                        key={`note-${note !== undefined ? note % 12 : 0}`}
+                        value={note !== undefined ? note % 12 : 0}
+                        onChange={setNote}
+                      />
+                    </InputRow>
+                    <InputRow>
+                      <Label>Options: </Label>
+                      <Dropdown
+                        options={[
+                          { label: "Optional (?)", value: "optional" },
+                          { label: "Highest ($)", value: "highest" },
+                          { label: "Lowest (^)", value: "lowest" }
+                        ]}
+                        key={`option-${option}`}
+                        value={option}
+                        onChange={setOption}
+                      />
+                    </InputRow>
+                    <InputRow>
+                      <Label>Octave: </Label>
+                      <Dropdown
+                        options={[
+                          { label: "Any", value: 0 },
+                          { label: "1", value: 1 },
+                          { label: "2", value: 2 },
+                          { label: "3", value: 3 },
+                          { label: "4", value: 4 },
+                          { label: "5", value: 5 }
+                        ]}
+                        key={`octave-${octave}`}
+                        value={octave}
+                        onChange={setOctave}
+                      />
+                    </InputRow>
+                  </Left>
+                  <Right>
+                    <Fretboard
+                      key={`fretboard-${note}-${Math.floor((note || 0) / 12)}`}
+                      note={note ? note % 12 : 0}
+                      octave={Math.floor((note || 0) / 12)}
+                    />
+                  </Right>
+                </Top>
+                <Bottom>
+                  {originalNote !== undefined ? (
+                    <Link
+                      onClick={() => {
+                        onRemove(
+                          originalOption
+                            ? ["optional", originalNote || 0]
+                            : originalNote || 0
+                        );
+                        toggleOpen();
+                      }}
+                    >
+                      [remove]
+                    </Link>
+                  ) : (
+                    <Link />
+                  )}
+                  <Link
+                    onClick={() => {
+                      onUpdate(
+                        option ? [option, note || 0] : note || 0,
+                        originalOption
+                          ? [originalOption, originalNote]
+                          : originalNote
+                      );
+                      toggleOpen();
+                    }}
+                  >
+                    {originalNote === undefined ? "[add]" : "[update]"}
+                  </Link>
+                </Bottom>
+              </InnerBox>
+            </OuterBox>
+          </React.Fragment>
+        ) : null}
+      </Link>
+    );
+  }
+}

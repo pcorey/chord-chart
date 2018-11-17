@@ -4,26 +4,26 @@ import React from "react";
 
 export default ({
   note: originalNote,
-  optional: originalOptional,
+  option: originalOption,
   onUpdate,
   onRemove
 }) => (
-  <NoteContainer note={originalNote} optional={originalOptional}>
+  <NoteContainer note={originalNote} option={originalOption}>
     {({
       open,
       toggleOpen,
       note,
-      optional,
+      option,
       octave,
       setNote,
-      setOptional,
+      setOption,
       setOctave
     }) => (
       <NotePure
         note={note}
         setNote={setNote}
-        optional={optional}
-        setOptional={setOptional}
+        option={option}
+        setOption={setOption}
         octave={octave}
         setOctave={setOctave}
         open={open}
@@ -31,7 +31,7 @@ export default ({
         onRemove={onRemove}
         toggleOpen={toggleOpen}
         originalNote={originalNote}
-        originalOptional={originalOptional}
+        originalOption={originalOption}
       />
     )}
   </NoteContainer>

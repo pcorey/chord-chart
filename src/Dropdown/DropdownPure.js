@@ -29,7 +29,7 @@ const Box = styled.div`
   z-index: 1;
 `;
 
-const getLabel = option => _.get(option, "label", option);
+const getLabel = option => _.get(option, "label", option) || "--";
 
 export default ({ open, options, value, setValue, toggleOpen }) => (
   <Link onClick={toggleOpen}>

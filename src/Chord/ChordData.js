@@ -48,6 +48,15 @@ export default ({
         .value(),
       optional: _.chain(notes)
         .filter(_.isArray)
+        .filter(([option, _note]) => option == "optional")
+        .map(([_, note]) => note),
+      highest: _.chain(notes)
+        .filter(_.isArray)
+        .filter(([option, _note]) => option == "highest")
+        .map(([_, note]) => note),
+      lowest: _.chain(notes)
+        .filter(_.isArray)
+        .filter(([option, _note]) => option == "lowest")
         .map(([_, note]) => note),
       from,
       fluidity,

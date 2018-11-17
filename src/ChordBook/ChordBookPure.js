@@ -35,6 +35,10 @@ const InnerBox = styled.div`
   border: 2px solid #3c3836;
   display: flex;
   flex-direction: column;
+  outline: none;
+  &:focus {
+    border: 2px solid #ebb23f;
+  }
 `;
 
 const ChordBox = styled.div`
@@ -73,61 +77,85 @@ const Cover = styled.div`
   right: -100vw;
 `;
 
-export default ({ chords, open, toggleOpen, setChord, drop, setDrop }) => (
-  <Link onClick={toggleOpen}>
-    {"   "}[change]
-    {open ? (
-      <React.Fragment>
-        <Cover onClick={toggleOpen} />
-        <OuterBox>
-          <InnerBox>
-            <ChordBox>
-              {_.chain(chords)
-                .drop(drop)
-                .map(chord => (
-                  <Chord key={`chordbookchord-${JSON.stringify(chord)}`}>
-                    <Chart chord={chord} onClick={() => setChord(chord)} />
-                  </Chord>
-                ))
-                .take(21)
-                .value()}
-            </ChordBox>
-            <Controls>
-              <Link
-                onClick={e => {
-                  e.stopPropagation();
-                  setDrop(Math.max(0, drop - 21));
+export default class extends React.Component {
+  componentDidUpdate() {
+    this.ref && this.ref.focus();
+  }
+
+  render() {
+    let { chords, open, toggleOpen, setChord, drop, setDrop } = this.props;
+    return (
+      <Link onClick={toggleOpen}>
+        {"   "}[change]
+        {open ? (
+          <React.Fragment>
+            <Cover onClick={toggleOpen} />
+            <OuterBox
+              onClick={event => {
+                event.stopPropagation();
+                return false;
+              }}
+            >
+              <InnerBox
+                tabIndex="0"
+                innerRef={ref => (this.ref = ref)}
+                onKeyDown={event => {
+                  switch (event.key) {
+                    case "ArrowLeft":
+                      return setDrop(Math.max(0, drop - 21));
+                    case "ArrowRight":
+                      return setDrop(Math.min(chords.length - 21, drop + 21));
+                  }
                 }}
               >
-                [previous]
-              </Link>
-              <Page>
-                {Math.floor(drop / 21) + 1}/{Math.ceil(chords.length / 21)}{" "}
-                pages ({_.chain(chords)
-                  .groupBy(chord =>
-                    _.map(
-                      chord,
-                      string => (_.isArray(string) ? string[0] : string)
-                    )
-                  )
-                  .keys()
-                  .size()
-                  .value()}{" "}
-                shapes & {_.size(chords)} fingerings).
-              </Page>
-              <Link
-                onClick={e => {
-                  console.log("click");
-                  e.stopPropagation();
-                  setDrop(Math.min(chords.length - 21, drop + 21));
-                }}
-              >
-                [next]
-              </Link>
-            </Controls>
-          </InnerBox>
-        </OuterBox>
-      </React.Fragment>
-    ) : null}
-  </Link>
-);
+                <ChordBox>
+                  {_.chain(chords)
+                    .drop(drop)
+                    .map(chord => (
+                      <Chord key={`chordbookchord-${JSON.stringify(chord)}`}>
+                        <Chart chord={chord} onClick={() => setChord(chord)} />
+                      </Chord>
+                    ))
+                    .take(21)
+                    .value()}
+                </ChordBox>
+                <Controls>
+                  <Link
+                    onClick={e => {
+                      e.stopPropagation();
+                      setDrop(Math.max(0, drop - 21));
+                    }}
+                  >
+                    [previous]
+                  </Link>
+                  <Page>
+                    {Math.ceil(drop / 21) + 1}/{Math.ceil(chords.length / 21)}{" "}
+                    pages ({_.chain(chords)
+                      .groupBy(chord =>
+                        _.map(
+                          chord,
+                          string => (_.isArray(string) ? string[0] : string)
+                        )
+                      )
+                      .keys()
+                      .size()
+                      .value()}{" "}
+                    shapes & {_.size(chords)} fingerings).
+                  </Page>
+                  <Link
+                    onClick={e => {
+                      e.stopPropagation();
+                      setDrop(Math.min(chords.length - 21, drop + 21));
+                    }}
+                  >
+                    [next]
+                  </Link>
+                </Controls>
+              </InnerBox>
+            </OuterBox>
+          </React.Fragment>
+        ) : null}
+      </Link>
+    );
+  }
+}
