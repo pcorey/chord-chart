@@ -20,6 +20,8 @@ export default ({
       query chord(
         $required: [Int]
         $optional: [Int]
+        $highest: [Int]
+        $lowest: [Int]
         $from: InputChord
         $fluidity: Float
         $playability: Float
@@ -30,6 +32,8 @@ export default ({
         chords(
           required: $required
           optional: $optional
+          highest: $highest
+          lowest: $lowest
           from: $from
           fluidity: $fluidity
           playability: $playability
